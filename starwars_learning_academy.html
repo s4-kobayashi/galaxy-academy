@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銀河学習アカデミー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #03060f;
+    --deep-space: #070d1a;
+    --nebula: #0d1b35;
+    --star-blue: #1a3a6e;
+    --lightsaber-blue: #4fc3f7;
+    --lightsaber-glow: #00b4ff;
+    --force-gold: #ffe066;
+    --rebel-red: #ff4f4f;
+    --text-primary: #e8eaf6;
+    --text-dim: #7986cb;
+    --text-muted: #4a5580;
+    --surface: rgba(26,58,110,0.25);
+    --surface-hover: rgba(79,195,247,0.1);
+    --border: rgba(79,195,247,0.15);
+    --border-bright: rgba(79,195,247,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--void);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    opacity: var(--o, 0.6);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--o, 0.6); transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(0.5); }
+  }
+
+  /* Nebula bg */
+  .nebula-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(29,78,216,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(109,40,217,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 30% at 50% 90%, rgba(0,180,255,0.04) 0%, transparent 70%);
+  }
+
+  /* Layout */
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px 80px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 32px 0 20px;
+    position: relative;
+  }
+  .academy-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--force-gold);
+    text-shadow: 0 0 20px rgba(255,224,102,0.5), 0 0 40px rgba(255,224,102,0.2);
+    margin-bottom: 4px;
+  }
+  .academy-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .lightsaber-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px auto;
+    width: fit-content;
+  }
+  .ls-line {
+    height: 1px;
+    width: 80px;
+    background: linear-gradient(90deg, transparent, var(--lightsaber-blue));
+  }
+  .ls-line.right { background: linear-gradient(90deg, var(--lightsaber-blue), transparent); }
+  .ls-dot {
+    width: 6px; height: 6px;
+    background: var(--lightsaber-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--lightsaber-glow);
+  }
+
+  /* Quick actions */
+  .quick-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .qa-btn {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--lightsaber-blue);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .qa-btn:hover {
+    border-color: var(--border-bright);
+    background: var(--surface-hover);
+    box-shadow: 0 0 12px rgba(79,195,247,0.15);
+    transform: translateY(-1px);
+  }
+
+  /* Chat window */
+  #chat-window {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* Messages */
+  .msg {
+    display: flex;
+    gap: 10px;
+    animation: msgIn 0.3s ease;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg.ai .msg-avatar {
+    background: linear-gradient(135deg, var(--star-blue), #0d2855);
+    border: 1px solid var(--border-bright);
+    box-shadow: 0 0 10px rgba(79,195,247,0.2);
+  }
+  .msg.user .msg-avatar {
+    background: linear-gradient(135deg, #1a3a1a, #0d2810);
+    border: 1px solid rgba(79,195,100,0.3);
+  }
+
+  .msg-bubble {
+    max-width: calc(100% - 50px);
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+  .msg.ai .msg-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+  }
+  .msg.user .msg-bubble {
+    background: rgba(79,195,247,0.12);
+    border: 1px solid rgba(79,195,247,0.2);
+    border-top-right-radius: 4px;
+    color: #cfe8ff;
+  }
+
+  /* Loading dots */
+  .loading-dots {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  .loading-dots span {
+    width: 6px; height: 6px;
+    background: var(--lightsaber-blue);
+    border-radius: 50%;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Input area */
+  #input-area {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, var(--void) 70%, transparent);
+    padding: 16px 0 8px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+    background: var(--nebula);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 6px 6px 6px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input-row:focus-within {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 20px rgba(79,195,247,0.1);
+  }
+  #user-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    resize: none;
+    max-height: 100px;
+    min-height: 36px;
+    line-height: 1.6;
+    padding: 6px 0;
+  }
+  #user-input::placeholder { color: var(--text-muted); }
+  #send-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--lightsaber-blue), var(--star-blue));
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(79,195,247,0.3);
+  }
+  #send-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(79,195,247,0.5);
+  }
+  #send-btn svg { color: white; }
+
+  /* Stock panel */
+  #stock-panel {
+    position: fixed;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 160px;
+    background: var(--deep-space);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 11px;
+    display: none;
+    z-index: 10;
+  }
+  @media (min-width: 1080px) { #stock-panel { display: block; } }
+  .stock-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .stock-item {
+    color: var(--lightsaber-blue);
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(79,195,247,0.08);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--star-blue); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="starfield"></div>
+<div class="nebula-bg"></div>
+
+<div id="app">
+  <header>
+    <div class="academy-title">🌌 銀河学習アカデミー</div>
+    <div class="academy-sub">Galactic Learning Academy · May the Force of Learning be with you</div>
+    <div class="lightsaber-divider">
+      <div class="ls-line"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-line right"></div>
+    </div>
+  </header>
+
+  <div class="quick-actions">
+    <button class="qa-btn" onclick="sendQuick('小説を生成して')">📖 小説を生成して</button>
+    <button class="qa-btn" onclick="sendQuick('問題を出して')">📝 問題を出して</button>
+    <button class="qa-btn" onclick="sendQuick('調べた語句を見せて')">💾 語句ストック確認</button>
+    <button class="qa-btn" onclick="sendQuick('新しい小説')">🔄 新しい小説</button>
+  </div>
+
+  <div id="chat-window"></div>
+
+  <div id="input-area">
+    <div class="input-row">
+      <textarea id="user-input" placeholder="メッセージを入力...（例：緊迫の意味は？）" rows="1"></textarea>
+      <button id="send-btn" onclick="sendMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="stock-panel">
+  <div class="stock-title">💾 語句ストック</div>
+  <div id="stock-list"><span style="color:var(--text-muted)">なし</span></div>
+</div>
+
+<script>
+// ── Starfield ──────────────────────────────────────────
+const sf = document.getElementById('starfield');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2 + 0.5;
+  s.style.cssText = `
+    left:${Math.random()*100}%;top:${Math.random()*100}%;
+    width:${size}px;height:${size}px;
+    --d:${2+Math.random()*4}s;--o:${0.2+Math.random()*0.7};
+    animation-delay:${Math.random()*4}s;
+  `;
+  sf.appendChild(s);
+}
+
+// ── State ──────────────────────────────────────────────
+let conversationHistory = [];
+let stockedWords = [];
+let isLoading = false;
+
+const WORKER_URL = 'https://galaxy-academy-proxy.lucky-star-001.workers.dev';
+
+// ── System Prompt ──────────────────────────────────────
+const SYSTEM_PROMPT = `あなたは「銀河学習アカデミーの先生」です。スター・ウォーズ二次創作小説を使った中学受験語彙トレーニングシステムを運営しています。
+
+## ① 小説生成機能
+トリガー：「小説を生成して」「スター・ウォーズ小説を作って」「今日の物語を始めよう」「新しい小説」
+
+登場人物リスト（1〜2名をランダムに選ぶ）：
+ルーク・スカイウォーカー、レイア・オーガナ、レイ、カイロ・レン、ヨーダ、ダース・ベイダー、アナキン・スカイウォーカー、オビ＝ワン・ケノービ、ハン・ソロ、R2-D2、BB-8
+
+テーマ候補（毎回ランダムに1つ、連続同テーマ不可）：
+1. ジェダイ修行の試練と葛藤
+2. 帝国軍の秘密基地への潜入作戦
+3. 砂漠の星タトゥイーンでの謎の出来事
+4. 親子・師弟の別れと再会
+5. 宇宙船内での緊急事態
+6. 銀河共和国を揺るがす陰謀
+7. 見知らぬ星での出会いと冒険
+8. 最後の決戦と希望の光
+
+文章ルール：
+- 文字数：本文1000〜1200文字（タイトルを除く）
+- 漢字レベル：中学受験範囲のみ
+- 語彙：以下を自然に盛り込む（緊迫・勇敢・克服・凛々しい・懸命・逆境・秘策・覚悟・比喩表現・堅固・威圧・慈悲・誓い・葛藤・貫徹・沈着・威厳・奮起など）
+- 文体：小学校高学年〜中学生向け三人称視点、起承転結、読後感が清々しいもの
+
+出力フォーマット：
+【タイトル】〇〇〇〇
+
+（本文1000〜1200文字）
+
+---
+📖 読み終わったら、わからなかった語句を教えてください。読みや意味を調べます。
+✅ 問題に進む場合は「問題を出して」と送ってください。
+
+## ② 語句・漢字調べ機能
+トリガー：語句・漢字を送信したとき（「緊迫の意味は？」「葛藤ってどういう意味？」「沈着」など単語のみ送信も含む）
+
+出力フォーマット：
+🔍 【語句】〇〇
+
+📌 読み：〇〇〇〇
+📖 意味：〇〇〇〇〇〇〇〇
+✏️ 例文：〇〇〇〇〇〇〇〇
+
+💾 ストック済み！この語句は問題に出題されます。
+他にわからない語句はありますか？「問題を出して」で問題に進めます。
+
+語句をストックしたら、必ず返答の最後に以下のJSONを含めてください（UIの更新に使用）：
+STOCK_UPDATE:{"words":["語句1","語句2",...（これまでストックした全語句）]}
+
+## ③ 問題出題機能
+トリガー：「問題を出して」「テストして」「クイズ開始」「問題に進む」
+
+問題1：要約4択問題（小説の内容に基づく）
+問題2以降：ストックされた語句から1問ずつ（読みがな・意味・使い方のいずれかをランダムに選択）
+
+採点ルール：
+- 読みがな：完全一致で正解
+- 意味：キーワード含有で正解
+- 使い方：語句が正しく使われていれば正解
+- 正解時：「素晴らしい！フォースを感じる！」などスター・ウォーズ表現
+- 不正解時：「惜しい！次は必ず覚えられる！」と前向きに
+
+## ④ 結果・ランク発表
+全問終了後：
+━━━━━━━━━━━━━━━━━━
+🏆 本日の結果
+━━━━━━━━━━━━━━━━━━
+正解数：〇 / 〇問
+正答率：〇〇%
+
+【ジェダイランク】
+称号（下記基準）
+
+ランク基準：
+- 90%以上：グランド・マスター
+- 70〜89%：ジェダイ・マスター
+- 50〜69%：ジェダイ・ナイト
+- 30〜49%：パダワン
+- 30%未満：ヤング・パダワン
+
+## ⑤ 毎日続ける工夫
+- 問題終了後「明日もぜひ挑戦してください！」
+- 「今日覚えた語句：〇〇・〇〇 — 明日の朝もう一度確認してみよう！」と提示
+- 語句を1つ多く調べようなど具体的目標の提案
+
+## 注意事項
+- 対象年齢は小学校高学年〜中学生。暴力・不適切表現は一切含めない
+- スター・ウォーズは二次創作として著作権に配慮（固有名詞・世界観の参照のみ）
+- 日本語で回答する（固有名詞以外）`;
+
+// ── Render ─────────────────────────────────────────────
+function appendMessage(role, text) {
+  const cw = document.getElementById('chat-window');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${role === 'ai' ? '🌌' : '👤'}</div>
+    <div class="msg-bubble">${escHtml(text)}</div>
+  `;
+  cw.appendChild(div);
+  cw.scrollTop = cw.scrollHeight;
+  return div;
+}
+
+function showLoading() {
+  const cw = document.getElementById('chat-window');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = 'loading-msg';
+  div.innerHTML = `
+    <div class="msg-avatar">🌌</div>
+    <div class="msg-bubble">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+  `;
+  cw.appendChild(div);
+  cw.scrollTop = cw.scrollHeight;
+}
+
+function removeLoading() {
+  const el = document.getElementById('loading-msg');
+  if (el) el.remove();
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateStockPanel() {
+  const list = document.getElementById('stock-list');
+  if (stockedWords.length === 0) {
+    list.innerHTML = '<span style="color:var(--text-muted)">なし</span>';
+  } else {
+    list.innerHTML = stockedWords.map(w =>
+      `<div class="stock-item">${escHtml(w)}</div>`
+    ).join('');
+  }
+}
+
+// ── Parse stock update from AI response ────────────────
+function parseStockUpdate(text) {
+  const match = text.match(/STOCK_UPDATE:\{"words":\[([^\]]*)\]\}/);
+  if (match) {
+    try {
+      const data = JSON.parse(text.match(/STOCK_UPDATE:(\{.*?\})/s)[1]);
+      if (data.words && Array.isArray(data.words)) {
+        stockedWords = data.words;
+        updateStockPanel();
+      }
+    } catch(e) {}
+    // Remove STOCK_UPDATE from displayed text
+    return text.replace(/\nSTOCK_UPDATE:\{.*?\}/s, '').trim();
+  }
+  return text;
+}
+
+// ── API Call ───────────────────────────────────────────
+async function callClaude(userMessage) {
+  conversationHistory.push({ role: 'user', content: userMessage });
+
+  showLoading();
+  isLoading = true;
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gemini-2.0-flash',
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        messages: conversationHistory
+      })
+    });
+
+    const data = await response.json();
+    removeLoading();
+
+    if (data.content && data.content[0]) {
+      let aiText = data.content[0].text || '';
+      aiText = parseStockUpdate(aiText);
+      conversationHistory.push({ role: 'assistant', content: aiText });
+      appendMessage('ai', aiText);
+    } else if (data.error) {
+      appendMessage('ai', `⚠️ エラー: ${data.error}`);
+    } else {
+      appendMessage('ai', 'エラーが発生しました。もう一度お試しください。');
+    }
+  } catch (err) {
+    removeLoading();
+    appendMessage('ai', `⚠️ 通信エラー: ${err.message}\nもう一度お試しください。`);
+  }
+
+  isLoading = false;
+}
+
+// ── Send ───────────────────────────────────────────────
+async function sendMessage() {
+  if (isLoading) return;
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  appendMessage('user', text);
+  await callClaude(text);
+}
+
+function sendQuick(text) {
+  if (isLoading) return;
+  document.getElementById('user-input').value = text;
+  sendMessage();
+}
+
+// ── Input auto-resize & Enter key ─────────────────────
+const inputEl = document.getElementById('user-input');
+inputEl.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+inputEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// ── Welcome message ────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  appendMessage('ai',
+`🌌 銀河学習アカデミーへようこそ！
+
+フォースが導く語彙トレーニングを始めましょう。
+
+【使い方】
+📖「小説を生成して」— スター・ウォーズ小説を読む
+🔍 語句を入力　　  — 意味・読みを調べてストック
+📝「問題を出して」 — 覚えた語句で腕試し
+🏆 全問終了後　　  — ジェダイランクを獲得！
+
+まずは「小説を生成して」と送ってみてください。
+May the Force of Learning be with you! ⚡`
+  );
+});
+</script>
+</body>
+</html>
