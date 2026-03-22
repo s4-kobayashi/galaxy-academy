@@ -628,6 +628,32 @@ Important: The meaning must use only simple Japanese that a 4th-grade elementary
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function scrollBottom(){const c=document.getElementById('chat');c.scrollTo({top:c.scrollHeight,behavior:'smooth'});}
 
+function stripMarkdown(t){
+  // **太字** と *斜体* を除去
+  var s = t;
+  while(s.indexOf('**') !== -1){
+    var a = s.indexOf('**');
+    var b = s.indexOf('**', a+2);
+    if(b === -1) break;
+    s = s.slice(0,a) + s.slice(a+2,b) + s.slice(b+2);
+  }
+  while(s.indexOf('*') !== -1){
+    var a = s.indexOf('*');
+    var b = s.indexOf('*', a+1);
+    if(b === -1) break;
+    if(s.slice(a+1,b).indexOf('
+') !== -1){ break; }
+    s = s.slice(0,a) + s.slice(a+1,b) + s.slice(b+1);
+  }
+  // ## 見出し を除去
+  s = s.split('
+').map(function(line){
+    return line.replace(/^#{1,6} /, '');
+  }).join('
+');
+  return s;
+}
+
 function addMsg(role,text){
   const c=document.getElementById('chat');
   const d=document.createElement('div');
@@ -806,11 +832,8 @@ async function callAI(msg){
     hideLoad();
     if(d?.content?.[0]){
       let txt=d.content[0].text||'';
-      // マークダウン記法を除去（**太字**、*斜体*、## 見出し など）
-      txt = txt.replace(/\*\*(.+?)\*\*/g, '$1');   // **太字** → 太字
-      txt = txt.replace(/\*(.+?)\*/g, '$1');         // *斜体* → 斜体
-      txt = txt.replace(/^#{1,6}\s+/gm, '');         // ## 見出し → 見出し
-      txt = txt.replace(/^[-*]\s+/gm, '・');          // - リスト → ・
+      // マークダウン記法を除去
+      txt = stripMarkdown(txt);
       hist.push({role:'assistant',content:txt});
       addMsg('ai',txt);
       if(txt.includes('【タイトル】')){const pg=getProgress();pg.xp=(pg.xp||0)+XP.story;saveProgress(pg);showToast(`+${XP.story} XP ⚡ 小説を読んだ`);}
