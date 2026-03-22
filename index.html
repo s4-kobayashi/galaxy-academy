@@ -909,14 +909,20 @@ function switchTabSend(msg, tabId) {
   quickSend(msg);
 }
 
-// ── Input handlers
-const ui=document.getElementById('ui');
-ui.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,96)+'px';});
-ui.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
-document.getElementById('lkinput').addEventListener('keydown',e=>{if(e.key==='Enter')lookupWord();});
+// ── Input handlers（DOMContentLoaded後に登録）
+function setupInputHandlers(){
+  const ui=document.getElementById('ui');
+  if(ui){
+    ui.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,96)+'px';});
+    ui.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+  }
+  const lk=document.getElementById('lkinput');
+  if(lk){ lk.addEventListener('keydown',e=>{if(e.key==='Enter')lookupWord();}); }
+}
 
 // Welcome
 window.addEventListener('DOMContentLoaded',()=>{
+  setupInputHandlers();
   checkDailyLogin();
   addMsg('ai',`🌌 銀河学習アカデミーへようこそ！
 
