@@ -137,6 +137,101 @@ html, body { height:100%; font-family:'Noto Sans JP',sans-serif; background:var(
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--star-blue); border-radius:2px; }
 
+/* Clear stock button */
+.clear-btn {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:7px 10px; border-radius:7px;
+  border:1px solid rgba(255,82,82,0.2); background:transparent;
+  color:rgba(255,82,82,0.5); font-family:'Noto Sans JP',sans-serif;
+  font-size:11px; cursor:pointer; transition:all 0.18s; margin-top:4px;
+}
+.clear-btn:hover { border-color:rgba(255,82,82,0.5); color:#ff5252; background:rgba(255,82,82,0.06); }
+
+.rank-btn {
+  display:flex; align-items:center; gap:9px; width:100%; padding:10px 12px;
+  border-radius:9px; border:1px solid rgba(255,215,64,0.2);
+  background:rgba(255,215,64,0.04);
+  color:var(--gold); font-family:'Noto Sans JP',sans-serif; font-size:12px; font-weight:500;
+  cursor:pointer; transition:all 0.18s; text-align:left;
+}
+.rank-btn:hover { background:rgba(255,215,64,0.1); border-color:rgba(255,215,64,0.5); box-shadow:0 0 12px var(--gold-glow); }
+.rank-btn .ic { font-size:15px; flex-shrink:0; }
+
+.streak-badge {
+  display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:8px;
+  background:rgba(255,152,0,0.08); border:1px solid rgba(255,152,0,0.2);
+  font-size:11px; color:#ffb74d; margin-top:2px;
+}
+.streak-num { font-family:'DotGothic16',monospace; font-size:16px; color:#ff9800; line-height:1; }
+
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(6px); z-index:100;
+  display:flex; align-items:center; justify-content:center;
+  animation:fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.rank-modal {
+  background:var(--deep); border:1px solid rgba(255,215,64,0.3);
+  border-radius:20px; padding:32px 28px; max-width:400px; width:90%;
+  box-shadow:0 0 60px rgba(255,215,64,0.1);
+  animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+.modal-close {
+  position:absolute; top:14px; right:16px;
+  background:none; border:none; color:var(--text-muted);
+  font-size:20px; cursor:pointer; line-height:1; transition:color 0.15s;
+}
+.modal-close:hover { color:var(--text); }
+
+.rank-emblem { text-align:center; margin-bottom:20px; }
+.rank-icon { font-size:56px; display:block; margin-bottom:8px; filter:drop-shadow(0 0 16px var(--gold-glow)); }
+.rank-name { font-family:'Noto Serif JP',serif; font-size:20px; font-weight:900; color:var(--gold); letter-spacing:0.1em; text-shadow:0 0 16px var(--gold-glow); }
+.rank-title-sub { font-size:11px; color:var(--text-muted); margin-top:4px; letter-spacing:0.15em; }
+
+.xp-section { margin:18px 0 14px; }
+.xp-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:6px; }
+.xp-bar-bg { height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+.xp-bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg, var(--saber), var(--gold)); box-shadow:0 0 8px var(--saber-glow); transition:width 1s cubic-bezier(0.25,1,0.5,1); }
+
+.stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:18px; }
+.stat-box { background:rgba(79,195,247,0.05); border:1px solid var(--border); border-radius:10px; padding:10px 8px; text-align:center; }
+.stat-num { font-family:'DotGothic16',monospace; font-size:20px; color:var(--saber); line-height:1.2; }
+.stat-lbl { font-size:9px; color:var(--text-muted); margin-top:3px; letter-spacing:0.1em; }
+
+.next-rank { background:rgba(255,215,64,0.05); border:1px dashed rgba(255,215,64,0.2); border-radius:10px; padding:12px 14px; font-size:12px; color:var(--text-dim); line-height:1.7; }
+.next-rank strong { color:var(--gold); }
+
+.modal-streak { display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,152,0,0.06); border:1px solid rgba(255,152,0,0.2); border-radius:10px; margin-bottom:16px; }
+.modal-streak-num { font-family:'DotGothic16',monospace; font-size:28px; color:#ff9800; }
+.modal-streak-txt { font-size:12px; color:#ffb74d; line-height:1.6; }
+
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:rgba(255,215,64,0.15); border:1px solid rgba(255,215,64,0.4);
+  border-radius:12px; padding:12px 20px; font-size:13px; color:var(--gold); z-index:200;
+  animation:toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  white-space:nowrap; backdrop-filter:blur(10px); box-shadow:0 0 20px rgba(255,215,64,0.15);
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+.confirm-modal {
+  background:var(--deep); border:1px solid rgba(255,82,82,0.3);
+  border-radius:16px; padding:24px; max-width:300px; width:90%;
+  animation:modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); text-align:center;
+}
+.confirm-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.confirm-sub { font-size:12px; color:var(--text-muted); margin-bottom:20px; line-height:1.6; }
+.confirm-btns { display:flex; gap:10px; justify-content:center; }
+.btn-cancel { padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-dim); font-size:13px; cursor:pointer; transition:all 0.15s; }
+.btn-cancel:hover { border-color:var(--border-active); color:var(--text); }
+.btn-danger { padding:8px 20px; border-radius:8px; border:1px solid rgba(255,82,82,0.4); background:rgba(255,82,82,0.1); color:#ff5252; font-size:13px; cursor:pointer; transition:all 0.15s; font-weight:700; }
+.btn-danger:hover { background:rgba(255,82,82,0.2); }
+
 @media (max-width:768px) {
   :root { --left-w:50px; --right-w:50px; }
   .nav-btn span:not(.ic) { display:none; }
@@ -153,7 +248,7 @@ html, body { height:100%; font-family:'Noto Sans JP',sans-serif; background:var(
 
   <header id="hdr">
     <div class="hdr-line"></div>
-    <div class="hdr-title">🌌 銀河学習アカデミー</div>
+    <div class="hdr-title">🌌 スターウォーズ学習アカデミー</div>
     <div class="hdr-line r"></div>
   </header>
 
@@ -164,8 +259,15 @@ html, body { height:100%; font-family:'Noto Sans JP',sans-serif; background:var(
     <button class="nav-btn" onclick="quickSend('問題を出して')"><span class="ic">📝</span><span>問題を出して</span></button>
     <button class="nav-btn" onclick="quickSend('新しい小説')"><span class="ic">🔄</span><span>新しい小説</span></button>
     <div class="divider"></div>
+    <button class="rank-btn" onclick="showRankModal()"><span class="ic">🏆</span><span>ジェダイランク</span></button>
+    <div id="streak-badge" class="streak-badge" style="display:none">
+      <span class="streak-num" id="streak-num">0</span>
+      <span>日連続修行中🔥</span>
+    </div>
+    <div class="divider"></div>
     <div class="sec-label">語句ストック</div>
     <div id="stock-left"><div class="sw-empty">まだありません</div></div>
+    <button class="clear-btn" id="clear-btn" onclick="confirmClear()" style="display:none">🗑 ストックをクリア</button>
   </aside>
 
   <!-- MAIN -->
@@ -203,6 +305,78 @@ html, body { height:100%; font-family:'Noto Sans JP',sans-serif; background:var(
 
 </div>
 <script>
+// ── Rank system data ──────────────────────────────────────
+const RANKS = [
+  { id:'youngling',   name:'ヤング・パダワン', icon:'🌱', min:0,    xpNeeded:50,  desc:'銀河の学びへの第一歩を踏み出した。' },
+  { id:'padawan',     name:'パダワン',         icon:'⚔️',  min:50,   xpNeeded:150, desc:'フォースの素質が芽生えている。' },
+  { id:'knight',      name:'ジェダイ・ナイト', icon:'🔵',  min:150,  xpNeeded:350, desc:'フォースを使いこなす力が育っている。' },
+  { id:'master',      name:'ジェダイ・マスター',icon:'🟡', min:350,  xpNeeded:700, desc:'銀河の叡智を体得しつつある。' },
+  { id:'grandmaster', name:'グランドマスター',  icon:'⚡',  min:700,  xpNeeded:1200,desc:'フォースと完全に一体化している。' },
+  { id:'force',       name:'フォースの申し子',  icon:'🌌',  min:1200, xpNeeded:9999,desc:'銀河の歴史に名を刻む究極の修行者。' },
+];
+
+function getRankForXP(xp) {
+  for(let i=RANKS.length-1;i>=0;i--){ if(xp>=RANKS[i].min) return RANKS[i]; }
+  return RANKS[0];
+}
+
+// ── localStorage persistence ───────────────────────────────
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem('ga_progress')||'{}'); } catch(e){ return {}; }
+}
+function saveProgress(p) {
+  localStorage.setItem('ga_progress', JSON.stringify(p));
+}
+
+function getProgress() {
+  const p = loadProgress();
+  return {
+    xp: p.xp || 0,
+    streak: p.streak || 0,
+    lastDate: p.lastDate || '',
+    totalDays: p.totalDays || 0,
+    totalWords: p.totalWords || 0,
+    totalCorrect: p.totalCorrect || 0,
+    totalQuestions: p.totalQuestions || 0,
+  };
+}
+
+// XP rewards
+const XP = { daily:20, word:5, correct:10, story:15 };
+
+function addXP(amount, reason) {
+  const p = getProgress();
+  p.xp += amount;
+  saveProgress(p);
+  updateStreakBadge();
+  showToast(`+${amount} XP ⚡ ${reason}`);
+}
+
+// Daily login streak
+function checkDailyLogin() {
+  const p = getProgress();
+  const today = new Date().toDateString();
+  if(p.lastDate === today) { updateStreakBadge(); return; }
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if(p.lastDate === yesterday) { p.streak = (p.streak||0)+1; }
+  else if(p.lastDate !== today) { p.streak = 1; }
+  p.lastDate = today;
+  p.totalDays = (p.totalDays||0)+1;
+  p.xp = (p.xp||0) + XP.daily + (p.streak>1 ? Math.min(p.streak*2,30) : 0);
+  saveProgress(p);
+  updateStreakBadge();
+  const bonus = p.streak>1 ? `（連続${p.streak}日ボーナス +${Math.min(p.streak*2,30)} XP！）` : '';
+  setTimeout(()=>showToast(`🌅 本日のログインボーナス +${XP.daily} XP ${bonus}`), 800);
+}
+
+function updateStreakBadge() {
+  const p = getProgress();
+  const badge = document.getElementById('streak-badge');
+  const num = document.getElementById('streak-num');
+  if(p.streak>=2){ badge.style.display='flex'; num.textContent=p.streak; }
+  else { badge.style.display='none'; }
+}
+
 // Stars
 const sf=document.getElementById('stars');
 for(let i=0;i<140;i++){const s=document.createElement('div');s.className='s';const z=Math.random()*1.8+0.3;s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;--d:${2+Math.random()*5}s;--dl:${Math.random()*5}s;--o:${0.15+Math.random()*0.7}`;sf.appendChild(s);}
@@ -296,11 +470,104 @@ function showLoad(){
 }
 function hideLoad(){document.getElementById('ldg')?.remove();}
 
+// ── Toast ─────────────────────────────────────────────────
+function showToast(msg) {
+  const old=document.querySelector('.toast');if(old)old.remove();
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity 0.5s'; t.style.opacity='0'; setTimeout(()=>t.remove(),500); },3000);
+}
+
+// ── Rank modal ─────────────────────────────────────────────
+function showRankModal() {
+  const p = getProgress();
+  const rank = getRankForXP(p.xp);
+  const rankIdx = RANKS.findIndex(r=>r.id===rank.id);
+  const nextRank = RANKS[rankIdx+1];
+  const xpInLevel = p.xp - rank.min;
+  const xpForNext = rank.xpNeeded - rank.min;
+  const pct = nextRank ? Math.min(100, Math.round((xpInLevel/xpForNext)*100)) : 100;
+
+  const streakMsg = p.streak>=2
+    ? `<div class="modal-streak"><span class="modal-streak-num">🔥${p.streak}</span><div class="modal-streak-txt"><strong style="color:#ff9800">${p.streak}日連続修行中！</strong><br>毎日続けるとボーナスXPが増えます</div></div>`
+    : '';
+
+  const nextMsg = nextRank
+    ? `次のランク <strong>${nextRank.icon} ${nextRank.name}</strong> まであと <strong>${nextRank.min - p.xp} XP</strong>。<br>語句を調べる・問題に正解するたびにXPが貯まります！`
+    : `<strong>最高ランク到達！</strong> フォースと完全に一体化しています。`;
+
+  const overlay = document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='rank-modal-overlay';
+  overlay.innerHTML=`
+    <div class="rank-modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="rank-emblem">
+        <span class="rank-icon">${rank.icon}</span>
+        <div class="rank-name">${rank.name}</div>
+        <div class="rank-title-sub">${rank.desc}</div>
+      </div>
+      ${streakMsg}
+      <div class="xp-section">
+        <div class="xp-label"><span>経験値 (XP)</span><span>${p.xp} XP</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num">${p.totalDays||0}</div><div class="stat-lbl">修行日数</div></div>
+        <div class="stat-box"><div class="stat-num">${p.totalWords||0}</div><div class="stat-lbl">習得語句</div></div>
+        <div class="stat-box"><div class="stat-num">${p.totalQuestions>0?Math.round((p.totalCorrect/p.totalQuestions)*100):0}%</div><div class="stat-lbl">正答率</div></div>
+      </div>
+      <div class="next-rank">${nextMsg}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
+  setTimeout(()=>{ const f=document.getElementById('xp-fill'); if(f) f.style.width=pct+'%'; },100);
+}
+
+function closeModal() {
+  const o=document.getElementById('rank-modal-overlay')||document.getElementById('confirm-modal-overlay');
+  if(o){ o.style.opacity='0'; o.style.transition='opacity 0.2s'; setTimeout(()=>o.remove(),200); }
+}
+
+// ── Confirm clear ──────────────────────────────────────────
+function confirmClear() {
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay'; overlay.id='confirm-modal-overlay';
+  overlay.innerHTML=`
+    <div class="confirm-modal">
+      <div class="confirm-title">🗑 ストックをクリア</div>
+      <div class="confirm-sub">調べた語句をすべて削除します。<br>この操作は元に戻せません。</div>
+      <div class="confirm-btns">
+        <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+        <button class="btn-danger" onclick="clearStock()">クリアする</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
+}
+
+function clearStock() {
+  stocked=[];
+  updateStock();
+  // Also clear word cards in right panel
+  const rs=document.getElementById('rscroll');
+  rs.querySelectorAll('.wcard').forEach(c=>c.remove());
+  if(!rs.querySelector('.rhint')){
+    const h=document.createElement('div');h.className='rhint';
+    h.innerHTML='<strong>使い方</strong><br>小説を読んでいてわからない語句・漢字を上の入力欄に入力して「調べる」を押してください。<br><br>読み・意味・例文をここに表示します。';
+    rs.appendChild(h);
+  }
+  closeModal();
+  showToast('🗑 語句ストックをクリアしました');
+}
+
 function updateStock(){
   const el=document.getElementById('stock-left');
   el.innerHTML=stocked.length===0
     ?'<div class="sw-empty">まだありません</div>'
     :stocked.map(w=>`<div class="sw" onclick="prefill('${esc(w)}')">${esc(w)}</div>`).join('');
+  const cb=document.getElementById('clear-btn');
+  if(cb) cb.style.display=stocked.length>0?'flex':'none';
 }
 function prefill(w){document.getElementById('lkinput').value=w;document.getElementById('lkinput').focus();}
 
@@ -343,7 +610,7 @@ async function lookupWord(){
     let parsed;
     try{parsed=JSON.parse(txt);}catch(e){parsed={word,reading:'―',meaning:txt||'解析できませんでした',example:''};}
     const isNew=!stocked.includes(parsed.word);
-    if(isNew){stocked.push(parsed.word);updateStock();}
+    if(isNew){stocked.push(parsed.word);updateStock();const pg=getProgress();pg.totalWords=(pg.totalWords||0)+1;saveProgress(pg);addXP(XP.word,'語句を習得');}
     addCard(parsed,isNew);
   }catch(err){
     hideRLoad();
@@ -366,6 +633,7 @@ async function callAI(msg){
       const txt=d.content[0].text||'';
       hist.push({role:'assistant',content:txt});
       addMsg('ai',txt);
+      if(txt.includes('【タイトル】')){const pg=getProgress();pg.xp=(pg.xp||0)+XP.story;saveProgress(pg);showToast(`+${XP.story} XP ⚡ 小説を読んだ`);}
     }else if(d?.error){addMsg('ai',`⚠️ APIエラー: ${d.error}`);}
     else{addMsg('ai','エラーが発生しました。もう一度お試しください。');}
   }catch(err){hideLoad();addMsg('ai',`⚠️ 通信エラー: ${err.message}`);}
@@ -397,6 +665,7 @@ document.getElementById('lkinput').addEventListener('keydown',e=>{if(e.key==='En
 
 // Welcome
 window.addEventListener('DOMContentLoaded',()=>{
+  checkDailyLogin();
   addMsg('ai',`🌌 銀河学習アカデミーへようこそ！
 
 【学習の流れ】
