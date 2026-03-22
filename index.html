@@ -137,9 +137,6 @@ html, body { height:100%; font-family:'Noto Sans JP',sans-serif; background:var(
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--star-blue); border-radius:2px; }
 
-/* フリガナ (ruby) スタイル */
-ruby { display:inline-flex; flex-direction:column-reverse; vertical-align:bottom; line-height:1.2; }
-rt { font-size:0.55em; text-align:center; color:var(--saber); letter-spacing:0.05em; line-height:1; }
 
 /* Clear stock button */
 .clear-btn {
@@ -437,14 +434,13 @@ const SYS=`あなたは「スターウォーズ学習アカデミーの先生」
 文章ルール：
 - 文字数：本文1000〜1200文字（タイトルを除く）
 - 漢字レベル：小学5〜6年・中学受験レベルの語彙を使う
-- フリガナ：小学5年生が読めない可能性がある漢字には必ず <ruby>漢字<rt>よみ</rt></ruby> 形式でフリガナを振ること（例：<ruby>葛藤<rt>かっとう</rt></ruby>、<ruby>威厳<rt>いげん</rt></ruby>、<ruby>沈着<rt>ちんちゃく</rt></ruby>）
 - 語彙：以下を自然に盛り込む（緊迫・勇敢・克服・凛々しい・懸命・逆境・秘策・覚悟・葛藤・貫徹・沈着・威厳・奮起・慈悲・堅固・威圧など）
 - 文体：小学校高学年〜中学生向け三人称視点、起承転結、読後感が清々しいもの
 
 出力フォーマット：
 【タイトル】〇〇〇〇
 
-（本文1000〜1200文字。フリガナは <ruby>漢字<rt>よみ</rt></ruby> 形式で本文中に含める）
+（本文1000〜1200文字）
 
 ---
 📖 右側のパネルでわからない語句を調べながら読んでください。
@@ -494,29 +490,11 @@ function addMsg(role,text){
   const c=document.getElementById('chat');
   const d=document.createElement('div');
   d.className=`msg ${role}`;
-  // AI messages: allow ruby/furigana HTML; user messages: escape for safety
-  const content = role==='ai'
-    ? sanitizeAI(text)
-    : esc(text);
-  d.innerHTML=`<div class="av">${role==='ai'?'🌌':'👤'}</div><div class="bbl">${content}</div>`;
+  d.innerHTML=`<div class="av">${role==='ai'?'🌌':'👤'}</div><div class="bbl">${esc(text)}</div>`;
   c.appendChild(d);
   scrollBottom();
 }
 
-// Allow only safe tags for AI output (ruby, rt, rp, br) - strip everything else
-function sanitizeAI(text){
-  // First escape all HTML
-  let s = esc(text);
-  // Then restore allowed tags: <ruby>, </ruby>, <rt>, </rt>, <rp>, </rp>, <br>
-  s = s.replace(/&lt;ruby&gt;/g,'<ruby>');
-  s = s.replace(/&lt;\/ruby&gt;/g,'</ruby>');
-  s = s.replace(/&lt;rt&gt;/g,'<rt>');
-  s = s.replace(/&lt;\/rt&gt;/g,'</rt>');
-  s = s.replace(/&lt;rp&gt;/g,'<rp>');
-  s = s.replace(/&lt;\/rp&gt;/g,'</rp>');
-  s = s.replace(/&lt;br\s*\/?&gt;/g,'<br>');
-  return s;
-}
 
 function showLoad(){
   const c=document.getElementById('chat');
